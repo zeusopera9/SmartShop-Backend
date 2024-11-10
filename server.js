@@ -142,6 +142,21 @@ app.post('/analyze', async (req, res) => {
     }
 });
 
+app.get('/top-selling', async (req, res) => {
+  const query = `
+    SELECT * FROM m_product_details_sport_shoes_processed
+    ORDER BY \`Ratings Count\` DESC
+    LIMIT 5`;
+
+  db.query(query, (err, results) => {
+    if(err) {
+      console.error('Error Executing Query: ', err);
+      return res.status(500).json({error: 'Database Query Failed'});
+    }
+    res.json(results);
+  })
+})
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
