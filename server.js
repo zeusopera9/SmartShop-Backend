@@ -142,11 +142,26 @@ app.post('/analyze', async (req, res) => {
     }
 });
 
-app.get('/top-selling', async (req, res) => {
+app.post('/top-selling', (req, res) => {
+  // Retrieve the gender value from the request body
+  const gender = req.body.gender?.toLowerCase();
+
+  // Validate the gender input
+  if (!['m', 'f'].includes(gender)) {
+    return res.status(400).json({ error: 'Invalid gender provided. Use "m" or "f".' });
+  }
+
+  // Determine the table name based on the gender
+  const tableName = gender === 'm'
+    ? 'm_product_details_sport_shoes_processed'
+    : 'w_product_details_sport_shoes_processed';
+
+  // Construct the SQL query to fetch the top 5 products by highest "Ratings Count"
   const query = `
-    SELECT * FROM m_product_details_sport_shoes_processed
+    SELECT * FROM ${tableName}
     ORDER BY \`Ratings Count\` DESC
-    LIMIT 5`;
+    LIMIT 5
+  `;
 
   db.query(query, (err, results) => {
     if(err) {
